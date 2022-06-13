@@ -18,5 +18,7 @@ requirements = functions.requirements(res_all)
 
 requirement_count = functions.requirement_count(requirements, keywords)
 
+
+
 print(f'Количество вакансий = {vacancy_count}, средняя ЗП =  {salary_mean}, {requirement_count}')
 

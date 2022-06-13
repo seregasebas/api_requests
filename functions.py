@@ -75,17 +75,25 @@ def requirements(res_all):
             requirement.append(res_all[i]['items'][e]['snippet']['requirement'])
     return requirement
 
-#Ищем какое количество вакансий содержит искомое требование
 def requirement_count(requirement, keywords):
-    word = keywords
+    word = keywords.split(',')
     total = 0
     dict_word = {}
-    for req in range(len(requirement)):
-        if requirement[req] != None:
-            if word in requirement[req].lower():
-                total += 1
-    dict_word[word] = total
+    for i in word:
+        for req in range(len(requirement)):
+            if requirement[req] != None:
+                if i.lower() in requirement[req].lower():
+                    total += 1
+        dict_word[i] = total
+    # dict_word_sorted = sorted(dict_word.items(), key = lambda x: x[:-1])
+    # dict_word = dict(dict_word_sorted)
     return dict_word
 
-# def save_file():
+def save_file(salary_mean, vacancy_count, requirement_count):
+
+    res = open('api_hh.txt', 'w', encoding='utf-8')
+    res.write(f'{salary_mean}\n')
+    res.write(f'{vacancy_count}\n')
+    res.write(f'{requirement_count}\n')
+    res.close()
 
