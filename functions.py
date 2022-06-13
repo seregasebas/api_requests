@@ -1,19 +1,19 @@
 # print(result.status_code)
 # pprint.pprint(result.text)
 # pprint.pprint(result.content)
-
+#import pprint
 import requests
-import pprint
 import json
 
 #функция получения словаря id - name города
 def id_name(city):
     goroda = requests.get('https://api.hh.ru/areas/').json()
-
+    city = city.lower()
     id_name = {}
     for i in range(len(goroda)):
         for e in range(len(goroda[i]['areas'])):
-            id_name[goroda[i]['areas'][e]['name']] = goroda[i]['areas'][e]['id']
+            id_name[goroda[i]['areas'][e]['name'].lower()] = goroda[i]['areas'][e]['id']
+    
     return id_name[city]
 
 
@@ -40,10 +40,8 @@ def api_hh(vacancy, city):
     for page in range(pages):
         print(f'страница номер: {page+1}')
         params = {
-            'text': f'NAME:({vacancy})', #AND COMPANY_NAME:(1 OR 2 OR YANDEX) AND (DJANGO OR SPRING)
+            'text': f'NAME:({vacancy})', #вакансия
             'area': city,                #Город
-            'page': page,                   #индекс страницы
-            # 'per_page': 50               #кол-во вакансий на 1 стр
             }
         res_all.append(requests.get(url, params=params).json())
     
@@ -85,15 +83,35 @@ def requirement_count(requirement, keywords):
                 if i.lower() in requirement[req].lower():
                     total += 1
         dict_word[i] = total
-    # dict_word_sorted = sorted(dict_word.items(), key = lambda x: x[:-1])
-    # dict_word = dict(dict_word_sorted)
-    return dict_word
+    dict_word_sorted = sorted(dict_word.items(), key = lambda x: x[1], reverse = True)
 
-def save_file(salary_mean, vacancy_count, requirement_count):
+    #количество вакасний по ключевым словам
+    count_key_words = 0
+    for i in range(len(dict_word_sorted)):
+        count_key_words += dict_word_sorted[i][1]
 
-    res = open('api_hh.txt', 'w', encoding='utf-8')
-    res.write(f'{salary_mean}\n')
-    res.write(f'{vacancy_count}\n')
-    res.write(f'{requirement_count}\n')
-    res.close()
+    #словарь с вакансиями и проыентами по ключевым словам
+    dict_word_new = {'requirement_count':[{} for i in range(len(dict_word_sorted))]}
+    for i in range(len(dict_word_new['requirement_count'])):
+        dict_word_new['requirement_count'][i]['name'] = dict_word_sorted[i][0]
+        dict_word_new['requirement_count'][i]['count'] = dict_word_sorted[i][1]
+        dict_word_new['requirement_count'][i]['persent'] = f'{round((dict_word_sorted[i][1]/count_key_words)*100, 2)}%'
+
+    return dict_word_new, count_key_words
+
+#Функция объединения данных в словарь для создания файла json
+def merged_dict(vacancy, keywords, requirement_count, vacancy_count, salary_mean, count_key_words):
+    new_dict = {}
+    new_dict['vacancy'] = vacancy
+    new_dict['keywords'] = keywords
+    new_dict['vacancy_count'] = vacancy_count
+    new_dict['count_key_words'] = count_key_words
+    new_dict['salary_mean'] = salary_mean
+    new_dict['requirement_count'] = requirement_count['requirement_count']
+    return new_dict
+
+#функция сохранения json файла
+def save_file(new_dict):
+    with open("api_hh.json", "w", encoding='utf-8') as write_file:
+        json.dump(new_dict, write_file)
 
