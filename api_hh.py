@@ -8,7 +8,7 @@ DESCRIPTION - описание вакансии
 '''
 vacancy = input('введите вакансию: ')
 city = functions.id_name(input('введите город: '))
-keywords = input('введите ключевые слова через , : ').split(',').lower()
+keywords = input('введите ключевые слова через , : ')
 
 res_all, vacancy_count = functions.api_hh(vacancy, city)
 
