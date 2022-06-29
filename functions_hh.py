@@ -61,9 +61,8 @@ def salary_mean(res_all):
         if salary != None:
             res_sum.append(salary)
     #Вычисляем среднюю
-    res_mean = sum(res_sum)/len(res_sum)
-    
-    return res_mean
+    res_mean = sum(res_sum)/len(res_sum) 
+    return f'{round((res_mean), 0)}'
 
 #Достанем все требования к вакансиям
 def requirements(res_all):
@@ -86,7 +85,7 @@ def requirement_count(requirement, keywords):
     dict_word_sorted = sorted(dict_word.items(), key = lambda x: x[1], reverse = True)
 
     #количество вакасний по ключевым словам
-    count_key_words = 0
+    count_key_words = 1
     for i in range(len(dict_word_sorted)):
         count_key_words += dict_word_sorted[i][1]
 
