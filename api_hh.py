@@ -1,13 +1,6 @@
-from crypt import methods
+# from crypt import methods
 import functions_hh
 from flask import Flask, render_template, request
-'''
-!ID - id вакансии (восклицательный знак обязателен)
-NAME - название вакансии
-!COMPANY_ID - id компании (восклицательный знак обязателен)
-COMPANY_NAME - название компании
-DESCRIPTION - описание вакансии
-'''
 
 app = Flask(__name__)
 
@@ -23,6 +16,7 @@ def contacts():
                'adress':'Russia, all cities'}
     return render_template('contacts.html', **contact)
 
+#Поиск в базе HH
 @app.route('/form/', methods=['GET'])
 def form_get():
     return render_template('form.html')
@@ -44,14 +38,34 @@ def form_post():
     #вакансии по ключевым словам и количесвто этих вакансий
     requirement_count, count_key_words = functions_hh.requirement_count(requirements, keywords)
     #новый словарь с нужными нам данными
-    new_dict = functions_hh.merged_dict(vacancy, keywords, requirement_count, vacancy_count, salary_mean, count_key_words)
+    new_dict = functions_hh.merged_dict(vacancy, city_return, keywords, requirement_count, vacancy_count, salary_mean, count_key_words)
     #заливаем в json файл
-    api_hh = functions_hh.save_file(new_dict)
+    functions_hh.save_file(new_dict)
+    #вносим нужные нам данные в нашу базу данных
+    functions_hh.data_to_the_database()
     return render_template('results.html', city = city_return, new_dict = new_dict)
 
 @app.route('/results/')
 def results():
     return render_template('results.html')
+
+#Поиск в своей базе
+@app.route('/form_sql/', methods=['GET'])
+def form_sql_get():
+    return render_template('form_sql.html')
+
+@app.route('/form_sql/', methods=['POST'])
+def form_sql_post():
+    #Получаем название вакансии из формы
+    vacancy = request.form['vacancy']
+    #Получаем название города из формы
+    city = request.form['query_string']
+    my_data = functions_hh.look_at_my_data(vacancy, city)
+    return render_template('results_sql.html', my_data = my_data)
+
+@app.route('/results_sql/')
+def results_sql():
+    return render_template('results_sql.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
