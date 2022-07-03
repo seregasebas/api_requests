@@ -47,6 +47,9 @@
             <a class="nav-link js-scroll" href="/form/">Form</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link js-scroll" href="/form_sql/">Form_SQL</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link js-scroll" href="/contacts/">Contacts</a>
           </li>
         </ul>
@@ -63,7 +66,6 @@
         <div class="container">
           <!--<p class="display-6 color-d">Hello, world!</p>-->
           <h1 class="intro-title mb-4">Results</h1>
-          <h3>Город поиска: {{city}}</h3>
           {%for key,value in new_dict.items()%}
           <h3>{{key}}: {{value}}</h3>
           {%endfor%}
